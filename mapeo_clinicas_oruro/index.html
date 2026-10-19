@@ -3,124 +3,110 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clínicas Nuevas Oruro</title>
+<title>Establecimientos de Salud Oruro</title>
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1b;--muted:#66665f;--line:#e2e2dc;--accent:#0b6e6e;--alta:#0b6e6e;--lic:#8a5a00;--media:#5a5a8a;}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--alta:#4fc1c1;--lic:#e0ac4a;--media:#a7a7e0;}}
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1b;--muted:#66665f;--line:#e2e2dc;--accent:#0b6e6e;--est:#0b6e6e;--seg:#8a5a00;--pri:#5a5a8a;--hl:#e3f2f1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--est:#4fc1c1;--seg:#e0ac4a;--pri:#a7a7e0;--hl:#1d3332}}
+:root[data-theme="dark"]{--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--est:#4fc1c1;--seg:#e0ac4a;--pri:#a7a7e0;--hl:#1d3332}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
 h1{font-size:1.7rem;margin:0 0 4px}
 h2{font-size:1.15rem;margin:32px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--muted);margin:0 0 16px}
-.note{background:var(--card);border-left:4px solid var(--lic);padding:10px 14px;border-radius:6px;font-size:.92rem}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
-.filters button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem}
+.note{background:var(--card);border-left:4px solid var(--seg);padding:10px 14px;border-radius:6px;font-size:.92rem;margin:8px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+.stat b{display:block;font-size:1.6rem;line-height:1.2}
+.stat span{color:var(--muted);font-size:.85rem}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;align-items:center}
+.filters button,select,input[type=search]{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;font:inherit;font-size:.9rem}
+.filters button{cursor:pointer}
 .filters button.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-input[type=search]{flex:1;min-width:180px;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;font:inherit}
+input[type=search]{flex:1;min-width:180px}
+label.chk{font-size:.9rem;display:flex;gap:6px;align-items:center}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card.op{background:var(--hl)}
 .card h3{margin:0 0 6px;font-size:1rem}
-.tag{display:inline-block;font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid currentColor;margin-bottom:8px}
-.t-Alta{color:var(--alta)}.t-Licitación{color:var(--lic)}.t-Media{color:var(--media)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.tag{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.s-Estatal{color:var(--est)}.s-Seguridad{color:var(--seg)}.s-Privado{color:var(--pri)}
+.tag.p{color:var(--fg)}
 .card p{margin:4px 0;font-size:.9rem;overflow-wrap:anywhere}
-.card .k{color:var(--muted)}
-a{color:var(--accent);word-break:break-word}
+.k{color:var(--muted)}
+a{color:var(--accent);overflow-wrap:anywhere}
 ul{padding-left:20px}
 li{margin:4px 0}
-.empty{color:var(--muted);display:none}
+.empty{color:var(--muted)}
 </style>
 </head>
 <body>
 <main>
-<h1>Mapeo de clínicas nuevas en Oruro</h1>
-<p class="sub">Prospección para venta de equipo médico · relevamiento al 19/10/2026</p>
-<p class="note">Datos obtenidos de búsquedas web (prensa local y perfiles públicos de redes sociales). No se pudo consultar Google Maps directamente: confirmar dirección y teléfono antes de visitar.</p>
+<h1>Establecimientos de salud – Oruro</h1>
+<p class="sub">Estatales, seguridad social y privados · ciudad y provincias · relevamiento al 19/10/2026</p>
+<p class="note">Datos obtenidos de búsquedas web (prensa local, Sedes, Ministerio de Salud, directorios y redes sociales). No se pudo consultar Google Maps directamente: confirmar dirección y teléfono antes de visitar.</p>
+<div class="stats" id="stats"></div>
 
-<h2>Prospectos</h2>
-<div class="filters" id="filters">
-  <button class="on" data-f="all">Todos</button>
-  <button data-f="Alta">Prioridad alta</button>
-  <button data-f="Licitación">Licitación pública</button>
-  <button data-f="Media">Por verificar</button>
-  <input type="search" id="q" placeholder="Buscar por nombre o rubro…" aria-label="Buscar">
+<h2>Listado</h2>
+<div class="filters" id="sector">
+  <button class="on" data-v="all">Todos</button>
+  <button data-v="Estatal">Estatales</button>
+  <button data-v="Seguridad social">Seguridad social</button>
+  <button data-v="Privado">Privados</button>
+</div>
+<div class="filters">
+  <select id="ambito" aria-label="Ámbito">
+    <option value="all">Ciudad y provincias</option>
+    <option value="ciudad">Solo ciudad de Oruro</option>
+    <option value="prov">Solo provincias</option>
+  </select>
+  <label class="chk"><input type="checkbox" id="op"> Solo oportunidades</label>
+  <input type="search" id="q" placeholder="Buscar nombre, tipo, municipio…" aria-label="Buscar">
 </div>
 <div class="grid" id="grid"></div>
-<p class="empty" id="empty">Sin resultados.</p>
+<p class="empty" id="empty" hidden>Sin resultados.</p>
 
-<h2>Contactos para generar red</h2>
-<ul>
-  <li><b>Sociedad Boliviana de Cancerología – Filial Oruro</b> (fundada el 13/04/2026): acceso a oncólogos.</li>
-  <li><b>UCB – nueva sede Oruro</b>: si abre carreras de salud, necesitará laboratorios y simuladores.</li>
-  <li><b>Clínica odontológica de la UTO</b>: sillones e instrumental para práctica estudiantil.</li>
-</ul>
+<h2>Clínicas privadas en provincias</h2>
+<p>No se encontraron clínicas privadas en las provincias; los pacientes se derivan a la ciudad de Oruro. Puede haber consultorios pequeños sin presencia en internet: pedir al Sedes el registro de establecimientos privados habilitados por municipio.</p>
 
-<h2>Excluidas por antiguas</h2>
-<p>Clínica Cristo Rey (1991), Policlínica Oruro, Clínica Natividad, Clínica URME, CIES Oruro, CEREFAT (+30 años), Odontología Titanium (13 años), Prosalud. Contactar solo si anuncian un servicio nuevo.</p>
-
-<h2>Cómo seguir el mapeo</h2>
-<ul>
-  <li><b>Sedes Oruro:</b> pedir el listado de establecimientos habilitados en 2025–2026 (fuente más confiable).</li>
-  <li><b>Google Maps:</b> buscar "clínica / centro médico / consultorio / fisioterapia / odontología Oruro"; priorizar locales con pocas reseñas y todas recientes.</li>
-  <li><b>Facebook:</b> buscar "inauguración clínica Oruro" filtrando por fecha 2025–2026; revisar la fecha de creación de la página.</li>
-  <li><b>TikTok / Instagram:</b> #OruroBolivia #clinicaoruro #consultorioOruro.</li>
-  <li><b>Fundempresa:</b> empresas recientes con rubro "servicios de salud" en Oruro.</li>
-  <li><b>SICOES:</b> convocatorias de Gobernación, Sedes y GAMO con rubro "equipamiento médico".</li>
-</ul>
-
-<h2>Fuentes</h2>
-<ul>
-  <li><a href="https://lapatria.bo/instituciones/clinica-santiago-ratifica-compromiso-salud-5to/">La Patria – Clínica Santiago 5to aniversario</a></li>
-  <li><a href="https://physiolife.center/">PhysioLife</a></li>
-  <li><a href="https://lapatria.bo/actualidad/sociedad/sedes-planifica-renovar-equipos-centros-salud-oruro/">La Patria – Sedes planifica renovar equipos</a></li>
-  <li><a href="https://lapatria.bo/estilo-de-vida/hospital-oncologico-en-oruro-no-fue-proyectado-oficialmente/">La Patria – Hospital de Especialidades</a></li>
-  <li><a href="https://www.oruro.gob.bo/ii-fase-del-hospital-oruro-corea-ya-cuenta-con-consorcio-adjudicado/">Gobernación – II fase Oruro-Corea</a></li>
-  <li><a href="https://abi.bo/index.php/polititca2/37230-senado-sanciona-ley-por-us-78-millones-para-la-ampliacion-y-equipamiento-del-hospital-de-tercer-nivel-en-oruro">ABI – Ley US$78 M Oruro-Corea</a></li>
-  <li><a href="https://lapatria.bo/actualidad/sociedad/hospital-general-oruro-gestiona-nuevos-equipos-hemodialisis/">La Patria – Hemodiálisis Hospital General</a></li>
-  <li><a href="https://lapatria.bo/estilo-de-vida/salud-bienestar/oruro-nueva-red-salud-busca-atencion-oportuna-pacientes/">La Patria – Red Integrada de Salud</a></li>
-  <li><a href="https://lapatria.bo/actualidad/la-sociedad-boliviana-de-cancerologia-se-establece-en-oruro/">La Patria – Sociedad de Cancerología Oruro</a></li>
-</ul>
+<h2>Cómo completar el mapeo</h2>
+<ul><li>Sedes Oruro: pedir el registro de establecimientos habilitados (públicos y privados) por municipio, y los habilitados en 2025-2026.</li><li>Ministerio de Salud: listado de establecimientos del SUS en Oruro (Estab_Oruro.pdf).</li><li>Google Maps: buscar “clínica / centro médico / consultorio / laboratorio / odontología” en cada municipio; priorizar locales con pocas reseñas y recientes.</li><li>Facebook: buscar “inauguración clínica Oruro”, “consultorio Huanuni”, “dentista Challapata”; revisar fecha de creación de cada página.</li><li>SICOES: suscribirse a convocatorias de Gobernación, Sedes, GAMO, alcaldías de provincia, UPRE, CNS y Caja Petrolera con rubro “equipamiento médico”.</li></ul>
 </main>
 <script>
-const D=[
-{p:"Alta",n:"Clínica Santiago",r:"Clínica general privada",a:"Abierta en 2021 (5 años)",o:"Anunció ampliación de servicios en 2026: necesitará equipamiento.",d:"Calle Rodríguez entre Brasil y Tejerina",c:"",l:[["Facebook","https://www.facebook.com/ClinicaSantiagoOruro/"],["TikTok","https://www.tiktok.com/@clinica.santiago_oruro"]]},
-{p:"Alta",n:"PhysioLife",r:"Fisioterapia y rehabilitación",a:"Nueva (marca 2025)",o:"Electroterapia, ultrasonido, láser, magnetoterapia, camillas.",d:"Av. 6 de Agosto y Herrera, Torre Fuerte, 1er piso",c:"68365007 · center.rehabilitation.physio.life@gmail.com",l:[["Web","https://physiolife.center/"]]},
-{p:"Licitación",n:"Hospital de Especialidades de Alta Complejidad",r:"Hospital público",a:"En construcción (conclusión prevista 08/2026)",o:"Equipamiento estimado Bs 15–20 millones.",d:"Complejo Hospital San Juan de Dios",c:"Sedes Oruro",l:[]},
-{p:"Licitación",n:"Hospital Oruro-Corea – II fase",r:"Hospital 3er nivel",a:"Consorcio coreano adjudicado",o:"194 camas con equipos; entrar como subcontratista o proveedor local.",d:"",c:"Gobernación de Oruro",l:[["Gobernación","https://www.oruro.gob.bo/ii-fase-del-hospital-oruro-corea-ya-cuenta-con-consorcio-adjudicado/"]]},
-{p:"Licitación",n:"Hemodiálisis – Hospital General San Juan de Dios",r:"Hemodiálisis",a:"Equipos desgastados",o:"Gestiona máquinas de hemodiálisis nuevas.",d:"",c:"Sedes / Ministerio de Salud",l:[]},
-{p:"Licitación",n:"Sedes Oruro – renovación de equipos",r:"Red de centros de salud",a:"Planificada",o:"Renovación de equipos en centros públicos.",d:"",c:"Sedes Oruro",l:[]},
-{p:"Licitación",n:"Red Integrada de Servicios de Salud (GAMO)",r:"22 establecimientos municipales",a:"Implementación en 2 años",o:"Equipamiento y mantenimiento.",d:"",c:"Alcaldía de Oruro",l:[]},
-{p:"Media",n:"Innovaz – Clínica Oftalmológica",r:"Oftalmología",a:"Por verificar",o:"Equipos de diagnóstico oftálmico.",d:"Centro de Oruro",c:"",l:[["Facebook","https://www.facebook.com/Innovaz.oruro/"]]},
-{p:"Media",n:"Centro Oftalmológico Dra. Noemí Chambilla",r:"Oftalmología",a:"Por verificar",o:"Equipos de diagnóstico oftálmico.",d:"",c:"",l:[["Facebook","https://www.facebook.com/Dra.NoemiGavrielaChambillaFlores/"]]},
-{p:"Media",n:"OrthoLife Odontología Especializada",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/ortholife100/"]]},
-{p:"Media",n:"Clínica Dental Ortoperios",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/Ortoperios/"]]},
-{p:"Media",n:"Toco's Odontología Integral",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/TocosOdontologia/"]]},
-{p:"Media",n:"OdontoPlus Oruro",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"TikTok @odontoplusoruro",l:[]},
-{p:"Media",n:"Gaia Odontología Estética",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"TikTok @gaiaodontologiaestetica",l:[]},
-{p:"Media",n:"Clínica Especializada San Juan",r:"Estética",a:"Por verificar",o:"Equipos de estética y láser.",d:"",c:"",l:[["Facebook","https://www.facebook.com/esteticaoruro/"]]},
-{p:"Media",n:"Clínica San Juan de Dios Servimed",r:"Clínica general",a:"Por verificar",o:"Equipamiento general.",d:"",c:"",l:[["Facebook","https://www.facebook.com/p/Cl%C3%ADnica-San-Juan-de-Dios-Servimed-100057168351325/"]]},
-{p:"Media",n:"Clínica de Maternidad La Salud",r:"Ginecología y obstetricia",a:"Por verificar",o:"Ecógrafos, monitores fetales.",d:"",c:"",l:[["Facebook","https://www.facebook.com/people/Clinica-de-Maternidad-La-Salud/100063650676579/"]]}
-];
-const L={Alta:"Prioridad alta","Licitación":"Licitación pública",Media:"Por verificar"};
-const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let f="all";
+const D=[{"sector": "Estatal", "tipo": "Gobernación / Sedes", "nombre": "Hospital General San Juan de Dios", "nivel": "3er nivel", "municipio": "Oruro", "direccion": "Calle San Felipe 538", "telefono": "", "novedad": "Hemodiálisis con equipos desgastados; gestiona máquinas nuevas.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/actualidad/sociedad/hospital-general-oruro-gestiona-nuevos-equipos-hemodialisis/"}, {"sector": "Estatal", "tipo": "Gobernación / Sedes", "nombre": "Hospital de Especialidades de Alta Complejidad", "nivel": "3er nivel (en construcción)", "municipio": "Oruro", "direccion": "Complejo Hospital San Juan de Dios", "telefono": "", "novedad": "Conclusión prevista 08/2026; equipamiento estimado Bs 15-20 M.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/actualidad/sociedad/sedes-planifica-renovar-equipos-centros-salud-oruro/"}, {"sector": "Estatal", "tipo": "Gobernación", "nombre": "Hospital Oruro-Corea", "nivel": "3er nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "II fase adjudicada a consorcio coreano: 194 camas con equipamiento (hasta US$110 M).", "prioridad": "Licitación", "enlace": "https://www.oruro.gob.bo/ii-fase-del-hospital-oruro-corea-ya-cuenta-con-consorcio-adjudicado/"}, {"sector": "Estatal", "tipo": "Municipal (GAMO)", "nombre": "Hospital Isaías", "nivel": "2do nivel (en construcción)", "municipio": "Oruro", "direccion": "Zona Las Lomas (sudeste)", "telefono": "", "novedad": "Obra al 40% a mediados de 2026; presupuesto ~Bs 67 M; financiamiento UPRE asegurado en 08/2026.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/enfoque-nacional/gestion/financiamiento-hospital-isaias-asegura-gestiones/"}, {"sector": "Estatal", "tipo": "Municipal (GAMO)", "nombre": "Hospital Barrios Mineros", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Centro municipal de hemodiálisis (abierto en 2019 con 7 máquinas).", "prioridad": "", "enlace": "https://lapatria.bo/enfoque-nacional/gestion/inauguran-el-centro-de-hemodialisis-de-oruro/"}, {"sector": "Estatal", "tipo": "Municipal (GAMO)", "nombre": "Hospital Walter Khon", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Centro de salud ampliado a hospital de 2do nivel.", "prioridad": "", "enlace": ""}, {"sector": "Estatal", "tipo": "Municipal (GAMO)", "nombre": "Nuevo hospital zona Yugoslavo", "nivel": "2do nivel (en análisis)", "municipio": "Oruro", "direccion": "Zona Yugoslavo", "telefono": "", "novedad": "Autoridades analizan convertir un establecimiento nuevo en hospital de 2do nivel.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/actualidad/sociedad/autoridades-salud-analizan-nuevo-hospital-segundo-nivel/"}, {"sector": "Estatal", "tipo": "Municipal (GAMO)", "nombre": "Red municipal de centros de salud", "nivel": "1er nivel", "municipio": "Oruro", "direccion": "24 centros de salud", "telefono": "", "novedad": "Red Integrada de Servicios de Salud (22 establecimientos) y mantenimiento de 24 centros.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/estilo-de-vida/salud-bienestar/oruro-nueva-red-salud-busca-atencion-oportuna-pacientes/"}, {"sector": "Estatal", "tipo": "Universidad (UTO)", "nombre": "Clínica Odontológica de la UTO", "nivel": "Universitaria", "municipio": "Oruro", "direccion": "Facultad de Ciencias de la Salud", "telefono": "", "novedad": "Atención con estudiantes de 4to y 5to año: sillones e instrumental.", "prioridad": "", "enlace": "https://rtvu.uto.edu.bo/2026/03/10/clinica-odontologica-de-la-uto-brinda-atencion-con-tratamientos-dentales-a-bajo-costo/"}, {"sector": "Estatal", "tipo": "Municipal / Sedes", "nombre": "Hospital de 2do nivel de Huanuni", "nivel": "2do nivel", "municipio": "Huanuni", "direccion": "", "telefono": "", "novedad": "12 especialistas nuevos en 08/2026 (pediatría; cirugía; anestesia; traumatología; ginecología).", "prioridad": "Licitación", "enlace": "https://www.sedesoruro.gob.bo/index.php/2026/08/11/el-servicio-departamental-de-salud-oruro-en-coordinacion-con-el-gobierno-autonomo-municipal-de-huanuni-consolida-un-importante-avance-para-la-salud-de-la-region-con-la-incorporacion-de-12-medicos-es/"}, {"sector": "Estatal", "tipo": "Municipal / Gobernación", "nombre": "Hospital San Martín de Porres (nuevo)", "nivel": "2do nivel (proyecto)", "municipio": "Huanuni", "direccion": "", "telefono": "", "novedad": "Diseño final casi concluido; busca financiamiento.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/enfoque-nacional/gestion/huanuni-busca-financiamiento-nuevo-hospital-segundo-nivel/"}, {"sector": "Estatal", "tipo": "Ministerio / Municipal", "nombre": "Hospital San Juan de Dios de Challapata", "nivel": "2do nivel", "municipio": "Challapata", "direccion": "", "telefono": "", "novedad": "Inaugurado a fines de 2023; inspección posterior halló falencias.", "prioridad": "Licitación", "enlace": "https://www.facebook.com/hospitalchallapataazanaque/"}, {"sector": "Estatal", "tipo": "UPRE / Municipal", "nombre": "Hospital San Andrés de Caracollo", "nivel": "2do nivel (en construcción)", "municipio": "Caracollo", "direccion": "", "telefono": "", "novedad": "Obra iniciada en 10/2023; estado actual por confirmar.", "prioridad": "Licitación", "enlace": "https://lapatria.bo/2023/10/27/caracollo-da-inicio-a-la-construccion-de-un-hospital-de-segundo-nivel/"}, {"sector": "Estatal", "tipo": "Municipal", "nombre": "Hospital de Santiago de Andamarca", "nivel": "Por confirmar", "municipio": "Andamarca", "direccion": "", "telefono": "", "novedad": "Hospital de la provincia Sud Carangas.", "prioridad": "", "enlace": "https://bolivia-streets.openalfa.com/oruro/health"}, {"sector": "Estatal", "tipo": "Municipal", "nombre": "Centro de Salud Pisiga Bolívar", "nivel": "1er nivel", "municipio": "Sabaya", "direccion": "Pisiga Bolívar (frontera)", "telefono": "", "novedad": "Centro de salud municipal.", "prioridad": "", "enlace": "https://bolivia-streets.openalfa.com/oruro/health"}, {"sector": "Estatal", "tipo": "Municipal / Sedes", "nombre": "Centros de salud de provincias", "nivel": "1er nivel", "municipio": "Provincias", "direccion": "Red Norte (Caracollo; Curahuara; Eucaliptus; Huayllamarca; Totora; Soracachi) y Red Occidente (Sabaya; Carangas; Coipasa), entre otras", "telefono": "", "novedad": "Listado completo en el registro de establecimientos del SUS (Ministerio de Salud).", "prioridad": "", "enlace": "https://www.minsalud.gob.bo/images/web/SUS/Estab_Oruro.pdf"}, {"sector": "Seguridad social", "tipo": "Caja Nacional de Salud", "nombre": "Hospital Obrero N°4 (CNS)", "nivel": "3er nivel", "municipio": "Oruro", "direccion": "Rotonda Sargento Flores y La Patria", "telefono": "", "novedad": "Falta de camas; implementa unidad de oncología.", "prioridad": "Media", "enlace": "https://lapatria.bo/enfoque-nacional/denuncian-falta-de-camas-en-hospital-obrero-no4-de-la-cns-en-oruro/"}, {"sector": "Seguridad social", "tipo": "Caja Nacional de Salud", "nombre": "Policlínico de Especialidades Candelaria (CNS)", "nivel": "Policlínico", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Edificio de 8 pisos entregado en 2022; 19 especialidades.", "prioridad": "", "enlace": "https://www.minsalud.gob.bo/6791-oruro-estrena-moderna-infraestructura-del-policlinico-de-la-cns-que-contara-con-la-atencion-en-mas-de-19-especialidades"}, {"sector": "Seguridad social", "tipo": "Caja Nacional de Salud", "nombre": "CIMFA 10 de Febrero (CNS)", "nivel": "1er nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Centro de medicina familiar.", "prioridad": "", "enlace": ""}, {"sector": "Seguridad social", "tipo": "Caja Petrolera de Salud", "nombre": "Hospital Petrolero Oruro", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "47 camas; abrió unidad de neonatología propia.", "prioridad": "Media", "enlace": "https://www.cps.org.bo/node/44"}, {"sector": "Seguridad social", "tipo": "Caja de Salud de Caminos", "nombre": "Hospital de la Caja de Caminos", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "35 camas; 19 especialidades.", "prioridad": "", "enlace": "https://www.minsalud.gob.bo/3357-oruro-caja-caminos"}, {"sector": "Seguridad social", "tipo": "Otras cajas", "nombre": "Caja Bancaria Estatal / COSSMIL / otras", "nivel": "Por confirmar", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Presencia en Oruro sin dirección confirmada.", "prioridad": "", "enlace": ""}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica Santiago", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Rodríguez entre Brasil y Tejerina", "telefono": "", "novedad": "Abierta en 2021; anunció ampliación de servicios en 2026.", "prioridad": "Alta", "enlace": "https://www.facebook.com/ClinicaSantiagoOruro/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Policlínica Oruro", "nivel": "3er nivel", "municipio": "Oruro", "direccion": "Calle Rodríguez 579 entre La Paz y 6 de Octubre", "telefono": "2 5275082", "novedad": "Emergencias 24 h; terapia intensiva.", "prioridad": "", "enlace": "https://policlinicaoruro.com/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica Cristo Rey", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Velasco Galvarro esq. Arce 6709", "telefono": "5274440", "novedad": "Desde 1991; imagenología y hemodiálisis.", "prioridad": "", "enlace": "http://clinica-cristorey.com/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica Natividad", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Bolívar 501 / 753", "telefono": "5254721", "novedad": "Varias especialidades.", "prioridad": "", "enlace": "http://clinica-natividad.com/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica URME (Urgencias Médico Quirúrgicas)", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Cochabamba 548 esq. 6 de Octubre", "telefono": "", "novedad": "Emergencias 24 h; servicio de tomografía.", "prioridad": "", "enlace": "https://www.facebook.com/ClinicaUrme/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica Virgen del Socavón", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Potosí 6152 entre Bolívar y Sucre", "telefono": "5283300", "novedad": "", "prioridad": "", "enlace": "https://doctorbolivia.com/clinicas-y-centros-medicos-oruro/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica Universitaria", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Pagador y Velasco Galvarro", "telefono": "5273714", "novedad": "", "prioridad": "", "enlace": "https://doctorbolivia.com/clinicas-y-centros-medicos-oruro/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica El Salvador", "nivel": "Por confirmar", "municipio": "Oruro", "direccion": "Calle Lira 644", "telefono": "", "novedad": "", "prioridad": "", "enlace": "https://doctorbolivia.com/clinicas-y-centros-medicos-oruro/"}, {"sector": "Privado", "tipo": "Clínica general", "nombre": "Clínica San Juan de Dios Servimed", "nivel": "Por confirmar", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/p/Cl%C3%ADnica-San-Juan-de-Dios-Servimed-100057168351325/"}, {"sector": "Privado", "tipo": "ONG", "nombre": "CIES Oruro", "nivel": "1er-2do nivel", "municipio": "Oruro", "direccion": "Calle Velasco Galvarro 880", "telefono": "", "novedad": "Emergencias 24 h; varias especialidades.", "prioridad": "", "enlace": "https://www.cies.org.bo/cies-oruro/"}, {"sector": "Privado", "tipo": "Maternidad / ginecología", "nombre": "Clínica de Maternidad La Salud", "nivel": "2do nivel", "municipio": "Oruro", "direccion": "Calle Caro 390", "telefono": "5255481", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/people/Clinica-de-Maternidad-La-Salud/100063650676579/"}, {"sector": "Privado", "tipo": "Pediatría", "nombre": "URPE Urgencias Pediátricas", "nivel": "Por confirmar", "municipio": "Oruro", "direccion": "Calle La Plata 1220", "telefono": "", "novedad": "", "prioridad": "", "enlace": "https://doctorbolivia.com/clinicas-y-centros-medicos-oruro/"}, {"sector": "Privado", "tipo": "Fisioterapia", "nombre": "PhysioLife", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "Av. 6 de Agosto y Herrera, Torre Fuerte 1er piso", "telefono": "68365007", "novedad": "Centro nuevo (marca de 2025).", "prioridad": "Alta", "enlace": "https://physiolife.center/"}, {"sector": "Privado", "tipo": "Fisioterapia", "nombre": "CEREFAT", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "Rodríguez y Velasco", "telefono": "", "novedad": "Más de 30 años.", "prioridad": "", "enlace": ""}, {"sector": "Privado", "tipo": "Oftalmología", "nombre": "Innovaz Clínica Oftalmológica", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "Centro de Oruro", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/Innovaz.oruro/"}, {"sector": "Privado", "tipo": "Oftalmología", "nombre": "Centro Oftalmológico Dra. Noemí Chambilla", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/Dra.NoemiGavrielaChambillaFlores/"}, {"sector": "Privado", "tipo": "Imágenes", "nombre": "Diagnóstico por Imágenes", "nivel": "Centro de diagnóstico", "municipio": "Oruro", "direccion": "Velasco Galvarro 600 esq. Rodríguez", "telefono": "", "novedad": "Tomografía; ecografía 5D; mamografía digital.", "prioridad": "", "enlace": "https://www.facebook.com/diagnosticoporimagenesbolivia/"}, {"sector": "Privado", "tipo": "Laboratorio", "nombre": "Laboratorio Clínico Estela", "nivel": "Laboratorio", "municipio": "Oruro", "direccion": "Av. Caro esq. Petot", "telefono": "", "novedad": "", "prioridad": "", "enlace": ""}, {"sector": "Privado", "tipo": "Laboratorio", "nombre": "Laboratorio Clínico Trinidad Chocaya", "nivel": "Laboratorio", "municipio": "Oruro", "direccion": "Tarapacá 1156", "telefono": "", "novedad": "", "prioridad": "", "enlace": ""}, {"sector": "Privado", "tipo": "Odontología", "nombre": "Odontología Titanium", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "13 años.", "prioridad": "", "enlace": "https://www.tiktok.com/discover/cl%C3%ADnica-odontolog%C3%ADa-titanium-oruro"}, {"sector": "Privado", "tipo": "Odontología", "nombre": "OrthoLife Odontología Especializada", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "Ortodoncia e implantes.", "prioridad": "Media", "enlace": "https://www.facebook.com/ortholife100/"}, {"sector": "Privado", "tipo": "Odontología", "nombre": "Clínica Dental Ortoperios", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/Ortoperios/"}, {"sector": "Privado", "tipo": "Odontología", "nombre": "Toco's Odontología Integral", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/TocosOdontologia/"}, {"sector": "Privado", "tipo": "Odontología", "nombre": "OdontoPlus Oruro", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "TikTok @odontoplusoruro", "prioridad": "Media", "enlace": ""}, {"sector": "Privado", "tipo": "Odontología", "nombre": "Gaia Odontología Estética", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "TikTok @gaiaodontologiaestetica", "prioridad": "Media", "enlace": ""}, {"sector": "Privado", "tipo": "Estética", "nombre": "Clínica Especializada San Juan", "nivel": "Consultorio", "municipio": "Oruro", "direccion": "", "telefono": "", "novedad": "", "prioridad": "Media", "enlace": "https://www.facebook.com/esteticaoruro/"}];
+const P={"Alta": "Prioridad alta", "Licitación": "Licitación / compra pública", "Media": "Por verificar"};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const isOp=x=>x.prioridad==="Alta"||x.prioridad==="Licitación";
+let sector="all";
+function stats(){
+  const n=f=>D.filter(f).length;
+  const S=[["Estatales",n(x=>x.sector==="Estatal")],["Seguridad social",n(x=>x.sector==="Seguridad social")],
+    ["Privados",n(x=>x.sector==="Privado")],["En provincias",n(x=>x.municipio!=="Oruro")],["Oportunidades activas",n(isOp)]];
+  document.getElementById("stats").innerHTML=S.map(([t,v])=>`<div class="stat"><b>${v}</b><span>${t}</span></div>`).join("");
+}
 function render(){
   const q=document.getElementById("q").value.toLowerCase();
-  const rows=D.filter(x=>(f==="all"||x.p===f)&&(x.n+" "+x.r).toLowerCase().includes(q));
+  const amb=document.getElementById("ambito").value;
+  const op=document.getElementById("op").checked;
+  const rows=D.filter(x=>(sector==="all"||x.sector===sector)
+    &&(amb==="all"||(amb==="ciudad")===(x.municipio==="Oruro"))
+    &&(!op||isOp(x))
+    &&[x.nombre,x.tipo,x.municipio,x.novedad].join(" ").toLowerCase().includes(q))
+    .sort((a,b)=>isOp(b)-isOp(a));
   document.getElementById("grid").innerHTML=rows.map(x=>{
-    const maps="https://www.google.com/maps/search/"+encodeURIComponent(x.n+" Oruro Bolivia");
-    const links=[...x.l,["Google Maps",maps]].map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ");
-    return `<div class="card"><span class="tag t-${x.p}">${L[x.p]}</span><h3>${esc(x.n)}</h3>
-<p><span class="k">Rubro:</span> ${esc(x.r)}</p><p><span class="k">Antigüedad:</span> ${esc(x.a)}</p>
-<p><span class="k">Oportunidad:</span> ${esc(x.o)}</p>${x.d?`<p><span class="k">Dirección:</span> ${esc(x.d)}</p>`:""}
-${x.c?`<p><span class="k">Contacto:</span> ${esc(x.c)}</p>`:""}<p>${links}</p></div>`}).join("");
-  document.getElementById("empty").style.display=rows.length?"none":"block";
+    const maps="https://www.google.com/maps/search/"+encodeURIComponent(x.nombre+" "+(x.municipio==="Provincias"?"":x.municipio)+" Oruro Bolivia");
+    const links=(x.enlace?`<a href="${esc(x.enlace)}" target="_blank" rel="noopener">Fuente</a> · `:"")+`<a href="${maps}" target="_blank" rel="noopener">Google Maps</a>`;
+    const f=(k,v)=>v?`<p><span class="k">${k}:</span> ${esc(v)}</p>`:"";
+    return `<div class="card${isOp(x)?" op":""}"><div class="tags"><span class="tag s-${x.sector.split(" ")[0]}">${esc(x.sector)}</span>${x.prioridad?`<span class="tag p">${P[x.prioridad]}</span>`:""}</div>
+<h3>${esc(x.nombre)}</h3>${f("Tipo",x.tipo)}${f("Nivel",x.nivel)}${f("Municipio",x.municipio)}${f("Dirección",x.direccion)}${f("Teléfono",x.telefono)}${f("Novedad",x.novedad)}<p>${links}</p></div>`}).join("");
+  document.getElementById("empty").hidden=rows.length>0;
 }
-document.getElementById("filters").addEventListener("click",e=>{
-  if(!e.target.dataset.f)return;f=e.target.dataset.f;
-  document.querySelectorAll("#filters button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
-document.getElementById("q").addEventListener("input",render);
-render();
+document.getElementById("sector").addEventListener("click",e=>{
+  const v=e.target.dataset.v;if(!v)return;sector=v;
+  document.querySelectorAll("#sector button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
+["ambito","op","q"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+stats();render();
 </script>
 </body>
 </html>
