@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clínicas Nuevas Oruro</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1b;--muted:#66665f;--line:#e2e2dc;--accent:#0b6e6e;--alta:#0b6e6e;--lic:#8a5a00;--media:#5a5a8a;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--alta:#4fc1c1;--lic:#e0ac4a;--media:#a7a7e0;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;margin:0 0 4px}
+h2{font-size:1.15rem;margin:32px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.sub{color:var(--muted);margin:0 0 16px}
+.note{background:var(--card);border-left:4px solid var(--lic);padding:10px 14px;border-radius:6px;font-size:.92rem}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.filters button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+input[type=search]{flex:1;min-width:180px;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;font:inherit}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{margin:0 0 6px;font-size:1rem}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid currentColor;margin-bottom:8px}
+.t-Alta{color:var(--alta)}.t-Licitación{color:var(--lic)}.t-Media{color:var(--media)}
+.card p{margin:4px 0;font-size:.9rem;overflow-wrap:anywhere}
+.card .k{color:var(--muted)}
+a{color:var(--accent);word-break:break-word}
+ul{padding-left:20px}
+li{margin:4px 0}
+.empty{color:var(--muted);display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Mapeo de clínicas nuevas en Oruro</h1>
+<p class="sub">Prospección para venta de equipo médico · relevamiento al 19/10/2026</p>
+<p class="note">Datos obtenidos de búsquedas web (prensa local y perfiles públicos de redes sociales). No se pudo consultar Google Maps directamente: confirmar dirección y teléfono antes de visitar.</p>
+
+<h2>Prospectos</h2>
+<div class="filters" id="filters">
+  <button class="on" data-f="all">Todos</button>
+  <button data-f="Alta">Prioridad alta</button>
+  <button data-f="Licitación">Licitación pública</button>
+  <button data-f="Media">Por verificar</button>
+  <input type="search" id="q" placeholder="Buscar por nombre o rubro…" aria-label="Buscar">
+</div>
+<div class="grid" id="grid"></div>
+<p class="empty" id="empty">Sin resultados.</p>
+
+<h2>Contactos para generar red</h2>
+<ul>
+  <li><b>Sociedad Boliviana de Cancerología – Filial Oruro</b> (fundada el 13/04/2026): acceso a oncólogos.</li>
+  <li><b>UCB – nueva sede Oruro</b>: si abre carreras de salud, necesitará laboratorios y simuladores.</li>
+  <li><b>Clínica odontológica de la UTO</b>: sillones e instrumental para práctica estudiantil.</li>
+</ul>
+
+<h2>Excluidas por antiguas</h2>
+<p>Clínica Cristo Rey (1991), Policlínica Oruro, Clínica Natividad, Clínica URME, CIES Oruro, CEREFAT (+30 años), Odontología Titanium (13 años), Prosalud. Contactar solo si anuncian un servicio nuevo.</p>
+
+<h2>Cómo seguir el mapeo</h2>
+<ul>
+  <li><b>Sedes Oruro:</b> pedir el listado de establecimientos habilitados en 2025–2026 (fuente más confiable).</li>
+  <li><b>Google Maps:</b> buscar "clínica / centro médico / consultorio / fisioterapia / odontología Oruro"; priorizar locales con pocas reseñas y todas recientes.</li>
+  <li><b>Facebook:</b> buscar "inauguración clínica Oruro" filtrando por fecha 2025–2026; revisar la fecha de creación de la página.</li>
+  <li><b>TikTok / Instagram:</b> #OruroBolivia #clinicaoruro #consultorioOruro.</li>
+  <li><b>Fundempresa:</b> empresas recientes con rubro "servicios de salud" en Oruro.</li>
+  <li><b>SICOES:</b> convocatorias de Gobernación, Sedes y GAMO con rubro "equipamiento médico".</li>
+</ul>
+
+<h2>Fuentes</h2>
+<ul>
+  <li><a href="https://lapatria.bo/instituciones/clinica-santiago-ratifica-compromiso-salud-5to/">La Patria – Clínica Santiago 5to aniversario</a></li>
+  <li><a href="https://physiolife.center/">PhysioLife</a></li>
+  <li><a href="https://lapatria.bo/actualidad/sociedad/sedes-planifica-renovar-equipos-centros-salud-oruro/">La Patria – Sedes planifica renovar equipos</a></li>
+  <li><a href="https://lapatria.bo/estilo-de-vida/hospital-oncologico-en-oruro-no-fue-proyectado-oficialmente/">La Patria – Hospital de Especialidades</a></li>
+  <li><a href="https://www.oruro.gob.bo/ii-fase-del-hospital-oruro-corea-ya-cuenta-con-consorcio-adjudicado/">Gobernación – II fase Oruro-Corea</a></li>
+  <li><a href="https://abi.bo/index.php/polititca2/37230-senado-sanciona-ley-por-us-78-millones-para-la-ampliacion-y-equipamiento-del-hospital-de-tercer-nivel-en-oruro">ABI – Ley US$78 M Oruro-Corea</a></li>
+  <li><a href="https://lapatria.bo/actualidad/sociedad/hospital-general-oruro-gestiona-nuevos-equipos-hemodialisis/">La Patria – Hemodiálisis Hospital General</a></li>
+  <li><a href="https://lapatria.bo/estilo-de-vida/salud-bienestar/oruro-nueva-red-salud-busca-atencion-oportuna-pacientes/">La Patria – Red Integrada de Salud</a></li>
+  <li><a href="https://lapatria.bo/actualidad/la-sociedad-boliviana-de-cancerologia-se-establece-en-oruro/">La Patria – Sociedad de Cancerología Oruro</a></li>
+</ul>
+</main>
+<script>
+const D=[
+{p:"Alta",n:"Clínica Santiago",r:"Clínica general privada",a:"Abierta en 2021 (5 años)",o:"Anunció ampliación de servicios en 2026: necesitará equipamiento.",d:"Calle Rodríguez entre Brasil y Tejerina",c:"",l:[["Facebook","https://www.facebook.com/ClinicaSantiagoOruro/"],["TikTok","https://www.tiktok.com/@clinica.santiago_oruro"]]},
+{p:"Alta",n:"PhysioLife",r:"Fisioterapia y rehabilitación",a:"Nueva (marca 2025)",o:"Electroterapia, ultrasonido, láser, magnetoterapia, camillas.",d:"Av. 6 de Agosto y Herrera, Torre Fuerte, 1er piso",c:"68365007 · center.rehabilitation.physio.life@gmail.com",l:[["Web","https://physiolife.center/"]]},
+{p:"Licitación",n:"Hospital de Especialidades de Alta Complejidad",r:"Hospital público",a:"En construcción (conclusión prevista 08/2026)",o:"Equipamiento estimado Bs 15–20 millones.",d:"Complejo Hospital San Juan de Dios",c:"Sedes Oruro",l:[]},
+{p:"Licitación",n:"Hospital Oruro-Corea – II fase",r:"Hospital 3er nivel",a:"Consorcio coreano adjudicado",o:"194 camas con equipos; entrar como subcontratista o proveedor local.",d:"",c:"Gobernación de Oruro",l:[["Gobernación","https://www.oruro.gob.bo/ii-fase-del-hospital-oruro-corea-ya-cuenta-con-consorcio-adjudicado/"]]},
+{p:"Licitación",n:"Hemodiálisis – Hospital General San Juan de Dios",r:"Hemodiálisis",a:"Equipos desgastados",o:"Gestiona máquinas de hemodiálisis nuevas.",d:"",c:"Sedes / Ministerio de Salud",l:[]},
+{p:"Licitación",n:"Sedes Oruro – renovación de equipos",r:"Red de centros de salud",a:"Planificada",o:"Renovación de equipos en centros públicos.",d:"",c:"Sedes Oruro",l:[]},
+{p:"Licitación",n:"Red Integrada de Servicios de Salud (GAMO)",r:"22 establecimientos municipales",a:"Implementación en 2 años",o:"Equipamiento y mantenimiento.",d:"",c:"Alcaldía de Oruro",l:[]},
+{p:"Media",n:"Innovaz – Clínica Oftalmológica",r:"Oftalmología",a:"Por verificar",o:"Equipos de diagnóstico oftálmico.",d:"Centro de Oruro",c:"",l:[["Facebook","https://www.facebook.com/Innovaz.oruro/"]]},
+{p:"Media",n:"Centro Oftalmológico Dra. Noemí Chambilla",r:"Oftalmología",a:"Por verificar",o:"Equipos de diagnóstico oftálmico.",d:"",c:"",l:[["Facebook","https://www.facebook.com/Dra.NoemiGavrielaChambillaFlores/"]]},
+{p:"Media",n:"OrthoLife Odontología Especializada",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/ortholife100/"]]},
+{p:"Media",n:"Clínica Dental Ortoperios",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/Ortoperios/"]]},
+{p:"Media",n:"Toco's Odontología Integral",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"",l:[["Facebook","https://www.facebook.com/TocosOdontologia/"]]},
+{p:"Media",n:"OdontoPlus Oruro",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"TikTok @odontoplusoruro",l:[]},
+{p:"Media",n:"Gaia Odontología Estética",r:"Odontología",a:"Por verificar",o:"Sillones, rayos X dental.",d:"",c:"TikTok @gaiaodontologiaestetica",l:[]},
+{p:"Media",n:"Clínica Especializada San Juan",r:"Estética",a:"Por verificar",o:"Equipos de estética y láser.",d:"",c:"",l:[["Facebook","https://www.facebook.com/esteticaoruro/"]]},
+{p:"Media",n:"Clínica San Juan de Dios Servimed",r:"Clínica general",a:"Por verificar",o:"Equipamiento general.",d:"",c:"",l:[["Facebook","https://www.facebook.com/p/Cl%C3%ADnica-San-Juan-de-Dios-Servimed-100057168351325/"]]},
+{p:"Media",n:"Clínica de Maternidad La Salud",r:"Ginecología y obstetricia",a:"Por verificar",o:"Ecógrafos, monitores fetales.",d:"",c:"",l:[["Facebook","https://www.facebook.com/people/Clinica-de-Maternidad-La-Salud/100063650676579/"]]}
+];
+const L={Alta:"Prioridad alta","Licitación":"Licitación pública",Media:"Por verificar"};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let f="all";
+function render(){
+  const q=document.getElementById("q").value.toLowerCase();
+  const rows=D.filter(x=>(f==="all"||x.p===f)&&(x.n+" "+x.r).toLowerCase().includes(q));
+  document.getElementById("grid").innerHTML=rows.map(x=>{
+    const maps="https://www.google.com/maps/search/"+encodeURIComponent(x.n+" Oruro Bolivia");
+    const links=[...x.l,["Google Maps",maps]].map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ");
+    return `<div class="card"><span class="tag t-${x.p}">${L[x.p]}</span><h3>${esc(x.n)}</h3>
+<p><span class="k">Rubro:</span> ${esc(x.r)}</p><p><span class="k">Antigüedad:</span> ${esc(x.a)}</p>
+<p><span class="k">Oportunidad:</span> ${esc(x.o)}</p>${x.d?`<p><span class="k">Dirección:</span> ${esc(x.d)}</p>`:""}
+${x.c?`<p><span class="k">Contacto:</span> ${esc(x.c)}</p>`:""}<p>${links}</p></div>`}).join("");
+  document.getElementById("empty").style.display=rows.length?"none":"block";
+}
+document.getElementById("filters").addEventListener("click",e=>{
+  if(!e.target.dataset.f)return;f=e.target.dataset.f;
+  document.querySelectorAll("#filters button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
+document.getElementById("q").addEventListener("input",render);
+render();
+</script>
+</body>
+</html>
