@@ -5,6 +5,7 @@ Uso: python3 generar.py
 import csv
 import json
 import os
+from html import escape
 
 from docx import Document
 from docx.enum.section import WD_ORIENT
@@ -31,6 +32,24 @@ PASOS = [
 ]
 
 
+def es_tercer_nivel(x):
+    return "3er nivel" in x["nivel"]
+
+
+def tiene_uti(x):
+    return x["uti"].startswith("Sí") or x["uti"] == "Neonatología"
+
+
+def tiene_emergencia(x):
+    return x["emergencia"].startswith("Sí")
+
+
+def alta_complejidad(rows):
+    """3er nivel, terapia intensiva o emergencia; ordenados de mayor a menor complejidad."""
+    sel = [x for x in rows if es_tercer_nivel(x) or tiene_uti(x) or tiene_emergencia(x)]
+    return sorted(sel, key=lambda x: (not es_tercer_nivel(x), not tiene_uti(x), not tiene_emergencia(x), x["sector"]))
+
+
 def leer():
     with open(os.path.join(BASE, "establecimientos_oruro.csv"), encoding="utf-8") as f:
         return list(csv.DictReader(f))
@@ -42,6 +61,12 @@ def generar_html(rows):
     html = HTML.replace("__DATA__", data).replace("__FECHA__", FECHA).replace("__NOTA__", NOTA)
     html = html.replace("__PROVINCIAS__", PROVINCIAS).replace("__PASOS__", pasos)
     html = html.replace("__PRIO__", json.dumps(PRIORIDADES, ensure_ascii=False))
+    filas = "".join(
+        f"<tr><td><b>{escape(x['nombre'])}</b><br><span class=k>{escape(x['sector'])} · {escape(x['municipio'])}</span></td>"
+        f"<td>{escape(x['nivel'])}</td><td>{escape(x['uti'] or '—')}</td><td>{escape(x['emergencia'] or '—')}</td>"
+        f"<td>{escape(x['telefono'] or '—')}</td></tr>"
+        for x in alta_complejidad(rows))
+    html = html.replace("__ALTA__", filas)
     with open(os.path.join(BASE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
@@ -52,6 +77,28 @@ def sombrear(cell, color):
     shd.set(qn("w:val"), "clear")
     shd.set(qn("w:fill"), color)
     tcPr.append(shd)
+
+
+def tabla(doc, filas, cols):
+    tbl = doc.add_table(rows=1, cols=len(cols))
+    tbl.style = "Table Grid"
+    for j, (_, h, _) in enumerate(cols):
+        c = tbl.rows[0].cells[j]
+        c.text = ""
+        rr = c.paragraphs[0].add_run(h)
+        rr.bold = True
+        rr.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        sombrear(c, "0B6E6E")
+    for x in filas:
+        cells = tbl.add_row().cells
+        for j, (k, _, _) in enumerate(cols):
+            cells[j].text = x[k]
+        if x["prioridad"] in ("Alta", "Licitación"):
+            for c in cells:
+                sombrear(c, "E3F2F1")
+    for row in tbl.rows:
+        for j, (_, _, w) in enumerate(cols):
+            row.cells[j].width = Cm(w)
 
 
 def generar_docx(rows):
@@ -83,41 +130,38 @@ def generar_docx(rows):
         doc.add_paragraph(f"{s}: {len(sub)} registros ({len(sub) - prov} en la ciudad de Oruro, {prov} en provincias).",
                           style="List Bullet")
     ops = [x for x in rows if x["prioridad"] in ("Alta", "Licitación")]
+    doc.add_paragraph(f"Con terapia intensiva: {sum(map(tiene_uti, rows))} · con emergencia: "
+                      f"{sum(map(tiene_emergencia, rows))} · de 3er nivel: {sum(map(es_tercer_nivel, rows))}.",
+                      style="List Bullet")
     doc.add_paragraph(f"Oportunidades activas (prioridad alta o compra pública): {len(ops)}.", style="List Bullet")
 
-    cols = [("nombre", "Nombre", 4.6), ("tipo", "Tipo", 3), ("nivel", "Nivel", 2.6), ("municipio", "Municipio", 2.2),
-            ("direccion", "Dirección", 4.2), ("telefono", "Teléfono", 2), ("novedad", "Novedad / oportunidad", 6.4)]
+    doc.add_heading("Tercer nivel, terapia intensiva y emergencias", level=2)
+    doc.add_paragraph("Establecimientos con 3er nivel, unidad de terapia intensiva (UTI) o emergencias, "
+                      "ordenados de mayor a menor complejidad. Datos de los sitios de cada clínica y de prensa "
+                      "(algunos de 2020-2021): confirmar por teléfono. El Centro Coordinador de Emergencias del "
+                      "Sedes (5287222) sabe qué hospitales tienen UTI y camas.")
+    tabla(doc, alta_complejidad(rows),
+          [("nombre", "Establecimiento", 5), ("sector", "Sector", 2.6), ("municipio", "Municipio", 2.2),
+           ("nivel", "Nivel", 2.8), ("uti", "Terapia intensiva", 4), ("emergencia", "Emergencia", 2.6),
+           ("direccion", "Dirección", 4.2), ("telefono", "Teléfono", 3)])
+
+    cols = [("nombre", "Nombre", 4.2), ("tipo", "Tipo", 2.6), ("nivel", "Nivel", 2.4), ("municipio", "Municipio", 2),
+            ("direccion", "Dirección", 3.8), ("telefono", "Teléfono", 2.2), ("uti", "UTI", 2.2),
+            ("emergencia", "Emergencia", 1.8), ("novedad", "Novedad / oportunidad", 5)]
     for i, s in enumerate(SECTORES, 1):
-        doc.add_heading(f"{i}. {s}", level=2)
-        tbl = doc.add_table(rows=1, cols=len(cols))
-        tbl.style = "Table Grid"
-        for j, (_, h, _) in enumerate(cols):
-            c = tbl.rows[0].cells[j]
-            c.text = ""
-            rr = c.paragraphs[0].add_run(h)
-            rr.bold = True
-            rr.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-            sombrear(c, "0B6E6E")
-        for x in sorted((x for x in rows if x["sector"] == s), key=lambda x: (x["municipio"] != "Oruro", x["municipio"])):
-            cells = tbl.add_row().cells
-            for j, (k, _, _) in enumerate(cols):
-                cells[j].text = x[k]
-            if x["prioridad"] in ("Alta", "Licitación"):
-                for c in cells:
-                    sombrear(c, "E3F2F1")
-        for row in tbl.rows:
-            for j, (_, _, w) in enumerate(cols):
-                row.cells[j].width = Cm(w)
+        doc.add_heading(f"Listado {i}. {s}", level=2)
+        tabla(doc, sorted((x for x in rows if x["sector"] == s), key=lambda x: (x["municipio"] != "Oruro", x["municipio"])),
+              cols)
         if s == "Privado":
             doc.add_paragraph().add_run("Provincias: ").bold = True
             doc.paragraphs[-1].add_run(PROVINCIAS)
     doc.add_paragraph("Filas sombreadas: prioridad alta o compra pública en curso.").runs[0].italic = True
 
-    doc.add_heading(f"{len(SECTORES) + 1}. Cómo completar el mapeo", level=2)
+    doc.add_heading("Cómo completar el mapeo", level=2)
     for s in PASOS:
         doc.add_paragraph(s, style="List Bullet")
 
-    doc.add_heading(f"{len(SECTORES) + 2}. Fuentes", level=2)
+    doc.add_heading("Fuentes", level=2)
     for u in sorted({x["enlace"] for x in rows if x["enlace"]}):
         doc.add_paragraph(u, style="List Bullet")
 
@@ -132,7 +176,7 @@ HTML = """<!doctype html>
 <title>Establecimientos de Salud Oruro</title>
 <style>
 :root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1b;--muted:#66665f;--line:#e2e2dc;--accent:#0b6e6e;--est:#0b6e6e;--seg:#8a5a00;--pri:#5a5a8a;--hl:#e3f2f1}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--est:#4fc1c1;--seg:#e0ac4a;--pri:#a7a7e0;--hl:#1d3332}}
+@media (prefers-color-scheme:dark){.tag.u{color:#f2b8b5!important}:root:not([data-theme="light"]){--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--est:#4fc1c1;--seg:#e0ac4a;--pri:#a7a7e0;--hl:#1d3332}}
 :root[data-theme="dark"]{--bg:#151514;--card:#1f1f1d;--fg:#ececea;--muted:#a3a39b;--line:#33332f;--accent:#4fc1c1;--est:#4fc1c1;--seg:#e0ac4a;--pri:#a7a7e0;--hl:#1d3332}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -141,7 +185,7 @@ h1{font-size:1.7rem;margin:0 0 4px}
 h2{font-size:1.15rem;margin:32px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--muted);margin:0 0 16px}
 .note{background:var(--card);border-left:4px solid var(--seg);padding:10px 14px;border-radius:6px;font-size:.92rem;margin:8px 0}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
 .stat b{display:block;font-size:1.6rem;line-height:1.2}
 .stat span{color:var(--muted);font-size:.85rem}
@@ -165,6 +209,12 @@ a{color:var(--accent);overflow-wrap:anywhere}
 ul{padding-left:20px}
 li{margin:4px 0}
 .empty{color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--accent);color:var(--bg);font-weight:600}
+tr:last-child td{border-bottom:0}
+.tag.u{color:#b3261e}
 </style>
 </head>
 <body>
@@ -174,12 +224,25 @@ li{margin:4px 0}
 <p class="note">__NOTA__</p>
 <div class="stats" id="stats"></div>
 
-<h2>Listado</h2>
+<h2>Tercer nivel, terapia intensiva y emergencias</h2>
+<p class="sub">Establecimientos con 3er nivel, unidad de terapia intensiva (UTI) o emergencias. Ordenados de mayor a menor complejidad.</p>
+<div class="tw"><table>
+<thead><tr><th>Establecimiento</th><th>Nivel</th><th>Terapia intensiva</th><th>Emergencia</th><th>Teléfono</th></tr></thead>
+<tbody>__ALTA__</tbody></table></div>
+<p class="note">Datos de UTI y emergencias tomados de los sitios de cada clínica y de prensa (algunos de 2020-2021). Confirmar por teléfono; el Centro Coordinador de Emergencias del Sedes (5287222) sabe qué hospitales tienen UTI y camas.</p>
+
+<h2>Listado completo</h2>
 <div class="filters" id="sector">
   <button class="on" data-v="all">Todos</button>
   <button data-v="Estatal">Estatales</button>
   <button data-v="Seguridad social">Seguridad social</button>
   <button data-v="Privado">Privados</button>
+</div>
+<div class="filters" id="comp">
+  <button class="on" data-v="all">Toda complejidad</button>
+  <button data-v="n3">3er nivel</button>
+  <button data-v="uti">Con terapia intensiva</button>
+  <button data-v="em">Con emergencia</button>
 </div>
 <div class="filters">
   <select id="ambito" aria-label="Ámbito">
@@ -204,11 +267,12 @@ const D=__DATA__;
 const P=__PRIO__;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const isOp=x=>x.prioridad==="Alta"||x.prioridad==="Licitación";
-let sector="all";
+const C={all:x=>true,n3:x=>x.nivel.includes("3er nivel"),uti:x=>x.uti.startsWith("Sí")||x.uti==="Neonatología",em:x=>x.emergencia.startsWith("Sí")};
+let sector="all",comp="all";
 function stats(){
   const n=f=>D.filter(f).length;
   const S=[["Estatales",n(x=>x.sector==="Estatal")],["Seguridad social",n(x=>x.sector==="Seguridad social")],
-    ["Privados",n(x=>x.sector==="Privado")],["En provincias",n(x=>x.municipio!=="Oruro")],["Oportunidades activas",n(isOp)]];
+    ["Privados",n(x=>x.sector==="Privado")],["Con terapia intensiva",n(C.uti)],["Con emergencia",n(C.em)],["En provincias",n(x=>x.municipio!=="Oruro")],["Oportunidades activas",n(isOp)]];
   document.getElementById("stats").innerHTML=S.map(([t,v])=>`<div class="stat"><b>${v}</b><span>${t}</span></div>`).join("");
 }
 function render(){
@@ -217,20 +281,23 @@ function render(){
   const op=document.getElementById("op").checked;
   const rows=D.filter(x=>(sector==="all"||x.sector===sector)
     &&(amb==="all"||(amb==="ciudad")===(x.municipio==="Oruro"))
-    &&(!op||isOp(x))
+    &&(!op||isOp(x))&&C[comp](x)
     &&[x.nombre,x.tipo,x.municipio,x.novedad].join(" ").toLowerCase().includes(q))
     .sort((a,b)=>isOp(b)-isOp(a));
   document.getElementById("grid").innerHTML=rows.map(x=>{
     const maps="https://www.google.com/maps/search/"+encodeURIComponent(x.nombre+" "+(x.municipio==="Provincias"?"":x.municipio)+" Oruro Bolivia");
     const links=(x.enlace?`<a href="${esc(x.enlace)}" target="_blank" rel="noopener">Fuente</a> · `:"")+`<a href="${maps}" target="_blank" rel="noopener">Google Maps</a>`;
     const f=(k,v)=>v?`<p><span class="k">${k}:</span> ${esc(v)}</p>`:"";
-    return `<div class="card${isOp(x)?" op":""}"><div class="tags"><span class="tag s-${x.sector.split(" ")[0]}">${esc(x.sector)}</span>${x.prioridad?`<span class="tag p">${P[x.prioridad]}</span>`:""}</div>
-<h3>${esc(x.nombre)}</h3>${f("Tipo",x.tipo)}${f("Nivel",x.nivel)}${f("Municipio",x.municipio)}${f("Dirección",x.direccion)}${f("Teléfono",x.telefono)}${f("Novedad",x.novedad)}<p>${links}</p></div>`}).join("");
+    return `<div class="card${isOp(x)?" op":""}"><div class="tags"><span class="tag s-${x.sector.split(" ")[0]}">${esc(x.sector)}</span>${C.uti(x)?`<span class="tag u">UTI</span>`:""}${C.em(x)?`<span class="tag u">Emergencia</span>`:""}${x.prioridad?`<span class="tag p">${P[x.prioridad]}</span>`:""}</div>
+<h3>${esc(x.nombre)}</h3>${f("Tipo",x.tipo)}${f("Nivel",x.nivel)}${f("Municipio",x.municipio)}${f("Dirección",x.direccion)}${f("Teléfono",x.telefono)}${f("Terapia intensiva",x.uti)}${f("Emergencia",x.emergencia)}${f("Novedad",x.novedad)}<p>${links}</p></div>`}).join("");
   document.getElementById("empty").hidden=rows.length>0;
 }
 document.getElementById("sector").addEventListener("click",e=>{
   const v=e.target.dataset.v;if(!v)return;sector=v;
   document.querySelectorAll("#sector button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
+document.getElementById("comp").addEventListener("click",e=>{
+  const v=e.target.dataset.v;if(!v)return;comp=v;
+  document.querySelectorAll("#comp button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
 ["ambito","op","q"].forEach(id=>document.getElementById(id).addEventListener("input",render));
 stats();render();
 </script>
