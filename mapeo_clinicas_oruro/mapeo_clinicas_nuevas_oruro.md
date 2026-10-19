@@ -3,6 +3,7 @@
 **Fecha del relevamiento:** 19/10/2026
 
 > **Actualización:** el listado completo de establecimientos estatales, de seguridad social y privados (ciudad y provincias) está en `establecimientos_oruro.csv`, `index.html` y `Mapeo_Establecimientos_Oruro.docx` (se regeneran con `python3 generar.py`).
+
 **Objetivo:** identificar clínicas y centros de salud **nuevos o en expansión** en Oruro (no clínicas antiguas y consolidadas) para ofrecerles equipo médico.
 **Fuentes:** búsquedas web (prensa local La Patria, Gobernación de Oruro, Ministerio de Salud, ABI, eju.tv) y perfiles públicos en Facebook, TikTok e Instagram.
 
