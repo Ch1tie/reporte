@@ -72,6 +72,7 @@ def main():
     p.add_argument("--narracion", default=os.path.join(D, "..", "audio", "starcraft_negocios.mp3"))
     p.add_argument("--salida", required=True)
     p.add_argument("--trabajo", required=True)
+    p.add_argument("--solo-audio", action="store_true", help="reutiliza el video mudo ya montado y solo rehace el audio")
     a = p.parse_args()
     T = a.trabajo
     for sub in ("orig", "gen", "img", "clips"):
@@ -80,72 +81,77 @@ def main():
     total = duracion(a.narracion) + 1.5
     tomas = calcular(total)
 
-    # 1. Diapositivas originales
-    for k, t in ORIG_T.items():
-        sh(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", a.video, "-frames:v", "1",
-            os.path.join(T, "orig", k + ".png")])
-
-    # 2. Imágenes generadas
-    from tomas import TOMAS
-    gen = [(f"g{i:03d}", s) for i, (_, s) in enumerate(TOMAS) if s["t"] != "orig"]
-    renderizar(gen, os.path.join(T, "gen"))
-
-    # 3. Lista final de tomas (con división automática de las largas)
-    plan = []
-    for i, (s, e, spec, anc) in enumerate(tomas):
-        if spec["t"] == "orig":
-            base = os.path.join(T, "orig", spec["src"] + ".png")
-            rec = spec.get("crop")
-            reg = ESPECIALES.get((spec["src"], rec), RECORTES.get(rec)) if rec else (0.5, 0.5, 1.0)
-        else:
-            base = os.path.join(T, "gen", f"g{i:03d}.png")
-            reg = (0.5, 0.5, 1.0)
-        if e - s > MAX_TOMA:
-            m = (s + e) / 2
-            if spec["t"] == "orig":
-                det = (reg[0], reg[1], reg[2] * 1.15)
-            else:
-                det = DETALLE.get(spec["t"], (0.5, 0.5, 1.18))
-            plan += [(s, m, base, reg), (m, e, base, det)]
-        else:
-            plan.append((s, e, base, reg))
-
-    # 4. Imágenes 1920x1080 por toma y clips
-    def hacer(k):
-        s, e, base, (cx, cy, z) = plan[k]
-        img = os.path.join(T, "img", f"{k:03d}.png")
-        recortar(base, img, cx, cy, z)
-        n = round(e * FPS) - round(s * FPS)
-        clip(img, n, k, os.path.join(T, "clips", f"{k:03d}.mp4"))
-        return k
-
-    with ThreadPoolExecutor(max_workers=os.cpu_count() or 2) as ex:
-        for k in ex.map(hacer, range(len(plan))):
-            print(f"  toma {k + 1}/{len(plan)}", flush=True)
-
-    lista = os.path.join(T, "clips.txt")
-    with open(lista, "w") as f:
-        f.writelines(f"file '{os.path.join(T, 'clips', f'{k:03d}.mp4')}'\n" for k in range(len(plan)))
     mudo = os.path.join(T, "mudo.mp4")
-    sh(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lista, "-c", "copy", mudo])
+    plan = []
+    if not (a.solo_audio and os.path.exists(mudo)):
+        # 1. Diapositivas originales
+        for k, t in ORIG_T.items():
+            sh(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", a.video, "-frames:v", "1",
+                os.path.join(T, "orig", k + ".png")])
 
-    # 5. Audio: voz + música (Terran 1, luego Terran 2, y de nuevo Terran 1 si falta), con ducking
+        # 2. Imágenes generadas
+        from tomas import TOMAS
+        gen = [(f"g{i:03d}", s) for i, (_, s) in enumerate(TOMAS) if s["t"] != "orig"]
+        renderizar(gen, os.path.join(T, "gen"))
+
+        # 3. Lista final de tomas (con división automática de las largas)
+        plan = []
+        for i, (s, e, spec, anc) in enumerate(tomas):
+            if spec["t"] == "orig":
+                base = os.path.join(T, "orig", spec["src"] + ".png")
+                rec = spec.get("crop")
+                reg = ESPECIALES.get((spec["src"], rec), RECORTES.get(rec)) if rec else (0.5, 0.5, 1.0)
+            else:
+                base = os.path.join(T, "gen", f"g{i:03d}.png")
+                reg = (0.5, 0.5, 1.0)
+            if e - s > MAX_TOMA:
+                m = (s + e) / 2
+                if spec["t"] == "orig":
+                    det = (reg[0], reg[1], reg[2] * 1.15)
+                else:
+                    det = DETALLE.get(spec["t"], (0.5, 0.5, 1.18))
+                plan += [(s, m, base, reg), (m, e, base, det)]
+            else:
+                plan.append((s, e, base, reg))
+
+        # 4. Imágenes 1920x1080 por toma y clips
+        def hacer(k):
+            s, e, base, (cx, cy, z) = plan[k]
+            img = os.path.join(T, "img", f"{k:03d}.png")
+            recortar(base, img, cx, cy, z)
+            n = round(e * FPS) - round(s * FPS)
+            clip(img, n, k, os.path.join(T, "clips", f"{k:03d}.mp4"))
+            return k
+
+        with ThreadPoolExecutor(max_workers=os.cpu_count() or 2) as ex:
+            for k in ex.map(hacer, range(len(plan))):
+                print(f"  toma {k + 1}/{len(plan)}", flush=True)
+
+        lista = os.path.join(T, "clips.txt")
+        with open(lista, "w") as f:
+            f.writelines(f"file '{os.path.join(T, 'clips', f'{k:03d}.mp4')}'\n" for k in range(len(plan)))
+        sh(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lista, "-c", "copy", mudo])
+
+    # 5. Audio: voz al frente (-13 LUFS, comprimida y con presencia) + música
+    #    (Terran 1, luego Terran 2, y de nuevo Terran 1 si falta) que baja cuando hablas.
     fc = (
         "[1:a]aresample=44100,aformat=channel_layouts=stereo[m1];"
         "[2:a]aresample=44100,aformat=channel_layouts=stereo[m2];"
         "[3:a]aresample=44100,aformat=channel_layouts=stereo[m3];"
         "[m1][m2]acrossfade=d=3[m12];[m12][m3]acrossfade=d=3,"
-        f"atrim=0:{total:.3f},loudnorm=I=-18:TP=-2,volume=0.55,"
+        f"atrim=0:{total:.3f},loudnorm=I=-20:TP=-3,volume=0.6,"
         f"afade=t=in:d=1.5,afade=t=out:st={total - 4:.3f}:d=4[mus];"
-        "[0:a]aresample=44100,aformat=channel_layouts=stereo,loudnorm=I=-16:TP=-1.5,"
-        "apad=pad_dur=2,asplit=2[voz][sc];"
-        "[mus][sc]sidechaincompress=threshold=0.04:ratio=4:attack=20:release=600[duck];"
+        "[0:a]aresample=44100,aformat=channel_layouts=stereo,highpass=f=80,"
+        "equalizer=f=3000:t=q:w=1.2:g=3,equalizer=f=200:t=q:w=1:g=-1.5,"
+        "acompressor=threshold=0.1:ratio=3:attack=10:release=200:makeup=2,"
+        "loudnorm=I=-13:TP=-1.2:LRA=7,apad=pad_dur=2,asplit=2[voz][sc];"
+        "[mus][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=500[duck];"
         f"[voz][duck]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.3f},alimiter=limit=0.95[a]"
     )
     sh(["ffmpeg", "-v", "error", "-y", "-i", a.narracion, "-i", a.musica1, "-i", a.musica2, "-i", a.musica1,
         "-i", mudo, "-filter_complex", fc, "-map", "4:v", "-map", "[a]",
         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", a.salida])
-    print("Video final:", a.salida, f"({duracion(a.salida):.1f} s, {len(plan)} tomas)")
+    print("Video final:", a.salida, f"({duracion(a.salida):.1f} s)")
 
 
 if __name__ == "__main__":
