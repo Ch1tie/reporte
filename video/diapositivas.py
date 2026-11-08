@@ -38,8 +38,17 @@ def blobs():
             '<div class="blob" style="width:300px;height:300px;right:-80px;bottom:-110px"></div>')
 
 
+ILUS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ilustraciones")
+
+
 def big(s):
     sub = f'<div class="sub">{md(s["s"])}</div>' if s.get("s") else ""
+    ilus = os.path.join(ILUS, s.get("_id", "") + ".png")
+    if s.get("_id") and os.path.exists(ilus):
+        fs = 54 if len(s["h"]) < 34 else 46
+        return f'''<img src="file://{ilus}" style="position:absolute;left:50%;top:40px;transform:translateX(-50%);height:470px;max-width:1120px;object-fit:contain;border-radius:22px">
+      <div style="position:absolute;left:0;right:0;bottom:44px;display:flex;flex-direction:column;align-items:center">
+      <h1 class="card" style="font-size:{fs}px;padding:14px 36px;max-width:1120px">{md(s["h"])}</h1></div>'''
     n = len(s["h"])
     fs = 76 if n < 28 else 64 if n < 42 else 54
     return f'''{blobs()}<div class="wrap">{emo(s["e"], 170)}

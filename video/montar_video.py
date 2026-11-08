@@ -91,7 +91,7 @@ def main():
 
         # 2. Imágenes generadas
         from tomas import TOMAS
-        gen = [(f"g{i:03d}", s) for i, (_, s) in enumerate(TOMAS) if s["t"] != "orig"]
+        gen = [(f"g{i:03d}", {**s, "_id": f"g{i:03d}"}) for i, (_, s) in enumerate(TOMAS) if s["t"] != "orig"]
         renderizar(gen, os.path.join(T, "gen"))
 
         # 3. Lista final de tomas (con división automática de las largas)
